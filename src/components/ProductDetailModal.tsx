@@ -405,7 +405,7 @@ export const ProductDetailModal: React.FC = () => {
                   </button>
 
                   <a
-                    href={`https://wa.me/221771234567?text=${encodeURIComponent(
+                    href={`https://wa.me/221782468632?text=${encodeURIComponent(
                       `🌸 *COMMANDE RAPIDE WHATSAPP* 🌸\nJe souhaite commander cet article :\n• ${product.name} (${product.japaneseName || ''})\n• Prix : ${formatPrice(product.price * quantity)} (Quantité: ${quantity})\n${Object.entries(activeVariants).length > 0 ? `• Options : ${Object.values(activeVariants).join(' / ')}\n` : ''}\nMerci de me confirmer la livraison !`
                     )}`}
                     target="_blank"
@@ -413,7 +413,7 @@ export const ProductDetailModal: React.FC = () => {
                     className="w-full py-3.5 px-6 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95"
                   >
                     <MessageCircle className="w-4 h-4 fill-current" />
-                    <span>COMMANDER CE PRODUIT PAR WHATSAPP</span>
+                    <span>COMMANDER PAR WHATSAPP (+221 78 246 86 32)</span>
                   </a>
 
                   {addedToast && (

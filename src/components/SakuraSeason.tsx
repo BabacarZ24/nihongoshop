@@ -30,7 +30,7 @@ export const SakuraSeason: React.FC = () => {
           </h2>
 
           <div className="text-xl sm:text-2xl font-serif tracking-[0.2em] text-[#D46382] dark:text-[#E88CA6]">
-            COLLECTION LIMITÉE 2026
+            SÉLECTION LIMITÉE 2026
           </div>
 
           <p className="text-sm sm:text-base text-slate-600 dark:text-[#D1D5DB] max-w-xl mx-auto font-light leading-relaxed">

@@ -15,6 +15,7 @@ import { WishlistDrawer } from './components/WishlistDrawer';
 import { QuickSearchModal } from './components/QuickSearchModal';
 import { AboutModal } from './components/AboutModal';
 import { ModeratorModal } from './components/ModeratorModal';
+import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { PetalFlightAnimation } from './components/PetalFlightAnimation';
 import { HomePage } from './pages/HomePage';
 import { CategoryPage } from './pages/CategoryPage';
@@ -95,6 +96,7 @@ const AppContent: React.FC = () => {
       <QuickSearchModal />
       <AboutModal />
       <ModeratorModal />
+      <FloatingWhatsApp />
     </div>
   );
 };

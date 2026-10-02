@@ -85,11 +85,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAbout }) => {
                 </svg>
               </a>
               <a
-                href="https://whatsapp.com"
+                href="https://wa.me/221782468632"
                 target="_blank"
                 rel="noreferrer"
-                className="w-9 h-9 rounded-full bg-slate-200 hover:bg-[#D46382] hover:text-white text-slate-700 dark:bg-white/5 dark:hover:bg-[#E88CA6] dark:hover:text-[#0B0D12] dark:text-white flex items-center justify-center transition-colors shadow-xs"
-                aria-label="WhatsApp"
+                className="w-9 h-9 rounded-full bg-slate-200 hover:bg-[#25D366] hover:text-white text-slate-700 dark:bg-white/5 dark:hover:bg-[#25D366] dark:hover:text-white dark:text-white flex items-center justify-center transition-colors shadow-xs"
+                aria-label="WhatsApp (+221 78 246 86 32)"
+                title="WhatsApp: +221 78 246 86 32"
               >
                 <MessageCircle className="w-4 h-4" />
               </a>
@@ -188,6 +189,17 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAbout }) => {
               </li>
               <li>
                 <span className="text-slate-600 dark:text-[#9CA3AF] hover:text-slate-900 dark:hover:text-[#FAF8F5] cursor-pointer">Guide des Tailles & Mesures</span>
+              </li>
+              <li className="pt-1">
+                <a
+                  href="https://wa.me/221782468632"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[#25D366] hover:underline font-medium text-xs"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                  <span>WhatsApp : +221 78 246 86 32</span>
+                </a>
               </li>
               <li className="pt-2">
                 <div className="text-[11px] font-mono text-[#D46382] dark:text-[#E88CA6]">

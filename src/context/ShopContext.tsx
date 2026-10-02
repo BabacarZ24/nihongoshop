@@ -332,17 +332,17 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name: newProd.name || 'Nouvelle Création Otaku',
       japaneseName: newProd.japaneseName || '新着商品',
       slug,
-      description: newProd.description || 'Pièce exclusive sélectionnée pour notre collection Nighongoshop.',
+      description: newProd.description || 'Pièce exclusive sélectionnée pour notre catalogue Nighongoshop.',
       detailedStory: newProd.detailedStory || '',
       price: Number(newProd.price) || 15000,
       originalPrice: newProd.originalPrice ? Number(newProd.originalPrice) : undefined,
       images: newProd.images && newProd.images.length > 0
         ? newProd.images
         : ['https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1000&q=80'],
-      category: newProd.category || 'collectibles',
+      category: newProd.category || 'anime',
       stock: typeof newProd.stock === 'number' ? newProd.stock : 12,
       variants: newProd.variants || [
-        { id: 'v-standard', name: 'Édition', type: 'edition', options: ['Standard Collector'] }
+        { id: 'v-standard', name: 'Édition', type: 'edition', options: ['Standard'] }
       ],
       rating: newProd.rating || 5.0,
       reviewCount: newProd.reviewCount || 1,

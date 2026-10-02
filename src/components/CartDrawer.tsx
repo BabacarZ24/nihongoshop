@@ -177,7 +177,7 @@ export const CartDrawer: React.FC = () => {
               <div className="space-y-2.5 pt-1">
                 {/* Direct WhatsApp Ordering */}
                 <a
-                  href={`https://wa.me/221771234567?text=${encodeURIComponent(
+                  href={`https://wa.me/221782468632?text=${encodeURIComponent(
                     `🌸 *NOUVELLE COMMANDE NIGHONGOSHOP* 🌸\nJe souhaite commander directement les articles suivants :\n${cart
                       .map((item) => `• ${item.product.name} (x${item.quantity}) — ${formatPrice(item.product.price * item.quantity)}`)
                       .join('\n')}\n\n*Total :* ${formatPrice(finalTotal)}\n*Livraison :* Offerte\n\nMerci de m'indiquer la disponibilité pour finaliser.`
@@ -187,7 +187,7 @@ export const CartDrawer: React.FC = () => {
                   className="w-full py-3.5 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95"
                 >
                   <MessageCircle className="w-4 h-4 fill-current" />
-                  <span>COMMANDER PAR WHATSAPP</span>
+                  <span>COMMANDER PAR WHATSAPP (+221 78 246 86 32)</span>
                 </a>
 
                 {/* Standard Modal Checkout */}

@@ -28,7 +28,7 @@ export const CategoriesOverviewPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#D46382] dark:text-[#E88CA6] tracking-widest uppercase mb-2">
             <Compass className="w-4 h-4" />
-            <span>LES 7 DOMAINES DE LA MAÎTRISE OTAKU</span>
+            <span>LES 4 DOMAINES DE LA MAÎTRISE OTAKU</span>
             <span className="text-[#D46382]/60 dark:text-[#E88CA6]/50">全領域一覧</span>
           </div>
           <h1 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-slate-900 dark:text-[#FAF8F5]">

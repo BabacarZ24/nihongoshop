@@ -54,7 +54,7 @@ export const WishlistDrawer: React.FC = () => {
                 <div className="space-y-1">
                   <p className="text-base font-semibold text-slate-900 dark:text-[#FAF8F5]">Aucun article sauvegardé</p>
                   <p className="text-xs max-w-xs text-slate-500 dark:text-[#9CA3AF]">
-                    Cliquez sur le cœur d'un produit pour composer votre collection privée.
+                    Cliquez sur le cœur d'un produit pour composer vos coups de cœur.
                   </p>
                 </div>
               </div>

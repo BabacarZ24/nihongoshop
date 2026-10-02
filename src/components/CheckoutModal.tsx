@@ -3,7 +3,8 @@ import { X, ShieldCheck, CheckCircle2, Smartphone, ArrowLeft, Lock, MessageCircl
 import { useShop } from '../context/ShopContext';
 import { CheckoutForm } from '../types';
 
-const WHATSAPP_PHONE = '221771234567'; // Dakar, Sénégal / Support Nighongoshop
+const WHATSAPP_PHONE = '221782468632'; // +221 78 246 86 32 / Support Nighongoshop
+const WHATSAPP_DISPLAY = '+221 78 246 86 32';
 
 export const CheckoutModal: React.FC = () => {
   const {
@@ -21,13 +22,13 @@ export const CheckoutModal: React.FC = () => {
     firstName: 'Arata',
     lastName: 'Kuroda',
     email: 'arata.kuroda@sekai.jp',
-    phone: '+221 77 123 45 67',
+    phone: '+221 78 246 86 32',
     address: '14 Boulevard de la République',
     city: 'Dakar',
     country: 'Sénégal',
     postalCode: '10200',
     paymentMethod: 'whatsapp',
-    notes: 'Emballage collector soigné'
+    notes: 'Emballage soigné'
   });
 
   const [step, setStep] = useState<'details' | 'payment'>('details');
@@ -153,7 +154,7 @@ Je souhaite valider ma commande par WhatsApp. Merci !`;
                 className="w-full py-4 px-6 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer"
               >
                 <MessageCircle className="w-5 h-5 fill-current" />
-                <span>Ouvrir la discussion WhatsApp ({currentOrder.orderNumber})</span>
+                <span>Confirmer sur WhatsApp ({WHATSAPP_DISPLAY})</span>
                 <ExternalLink className="w-4 h-4 ml-1" />
               </a>
               <p className="text-[11px] text-slate-500 dark:text-[#9CA3AF] mt-2">
@@ -453,10 +454,10 @@ Je souhaite valider ma commande par WhatsApp. Merci !`;
                         <div className="mt-4 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 text-xs space-y-1.5 text-emerald-900 dark:text-emerald-200">
                           <p className="font-semibold flex items-center gap-1.5">
                             <MessageCircle className="w-4 h-4 fill-current text-emerald-600 dark:text-emerald-400" />
-                            Finalisation via WhatsApp
+                            Finalisation directe via WhatsApp ({WHATSAPP_DISPLAY})
                           </p>
                           <p className="text-[11px] text-emerald-800/80 dark:text-emerald-300 leading-relaxed">
-                            En cliquant sur le bouton ci-dessous, votre panier sera enregistré et l'application WhatsApp s'ouvrira avec les articles pré-remplis pour notre conseiller.
+                            Votre commande sera envoyée instantanément sur notre WhatsApp officiel ({WHATSAPP_DISPLAY}). Notre équipe validera votre commande et préparera votre livraison dans les plus brefs délais.
                           </p>
                         </div>
                       )}

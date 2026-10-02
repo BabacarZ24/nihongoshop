@@ -155,7 +155,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, onNavigate }) => 
                     <div className="absolute left-1/2 -translate-x-1/2 mt-1 w-72 bg-white dark:bg-[#12151E] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl py-2 z-50 backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-200">
                       <div className="px-3 py-1.5 border-b border-slate-100 dark:border-white/5 text-[10px] font-mono text-slate-400 dark:text-[#9CA3AF] uppercase tracking-wider flex items-center justify-between">
                         <span>PAGES DES UNIVERS DÉDIÉS</span>
-                        <span className="text-[#E88CA6]">7 MONDES</span>
+                        <span className="text-[#E88CA6]">4 UNIVERS</span>
                       </div>
                       <div className="py-1">
                         {CATEGORIES.map((cat) => (
@@ -184,7 +184,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, onNavigate }) => 
                           }}
                           className="w-full text-center py-1.5 text-[11px] font-semibold text-[#D46382] dark:text-[#E88CA6] hover:underline"
                         >
-                          Voir la vue d'ensemble des 7 univers →
+                          Voir la vue d'ensemble des 4 univers →
                         </button>
                       </div>
                     </div>
