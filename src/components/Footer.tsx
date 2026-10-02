@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp, Instagram, MessageCircle, Twitter, Shield, Sparkles } from 'lucide-react';
+import { ArrowUp, Instagram, MessageCircle, Twitter, Shield, ShieldCheck, Lock, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { CATEGORIES } from '../data/categories';
@@ -10,7 +10,7 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAbout }) => {
-  const { setIsModeratorOpen } = useShop();
+  const { setIsModeratorOpen, isModeratorAuthenticated } = useShop();
   const navigate = useNavigate();
 
   const scrollToTop = () => {
@@ -137,8 +137,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAbout }) => {
                   onClick={() => setIsModeratorOpen(true)}
                   className="text-[#D46382] dark:text-[#E88CA6] hover:underline transition-colors cursor-pointer flex items-center gap-1.5 font-medium"
                 >
-                  <Shield className="w-3 h-3 text-[#D46382] dark:text-[#E88CA6]" />
-                  <span>Espace Modérateur // 管理者</span>
+                  {isModeratorAuthenticated ? (
+                    <>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                      <span>Espace Modérateur (Connecté) // 管理者</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-3 h-3 text-[#D46382] dark:text-[#E88CA6]" />
+                      <span>Accès Modérateur (Connexion) // 管理者</span>
+                    </>
+                  )}
                 </button>
               </li>
             </ul>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, Heart, ShoppingBag, Menu, X, Globe, Sparkles, Shield, Sun, Moon, ChevronDown } from 'lucide-react';
+import { Search, Heart, ShoppingBag, Menu, X, Globe, Sparkles, Shield, ShieldCheck, Lock, Sun, Moon, ChevronDown } from 'lucide-react';
 import { useShop, CURRENCIES } from '../context/ShopContext';
 import { CurrencyCode } from '../types';
 import { CATEGORIES } from '../data/categories';
@@ -22,6 +22,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, onNavigate }) => 
     setIsSearchOpen,
     setIsAboutOpen,
     setIsModeratorOpen,
+    isModeratorAuthenticated,
+    moderatorUser,
     currency,
     setCurrency,
     cartIconRef,
@@ -229,9 +231,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, onNavigate }) => 
         </nav>
 
         {/* Right utility actions: Currency switcher, Theme Toggle, Moderator, Search, Wishlist, Cart */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Currency selector */}
-          <div className="relative">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          {/* Currency selector (hidden on small mobile to give priority to Moderator button, available in mobile drawer) */}
+          <div className="relative hidden md:block">
             <button
               id="currency-selector-btn"
               onClick={() => setCurrencyDropdownOpen(!currencyDropdownOpen)}
@@ -272,7 +274,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, onNavigate }) => 
           <button
             id="nav-theme-toggle-btn"
             onClick={toggleTheme}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-amber-200 border border-slate-200/80 dark:border-white/15 transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-amber-200 border border-slate-200/80 dark:border-white/15 transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95"
             title={theme === 'dark' ? 'Basculer vers le mode clair (par défaut)' : 'Basculer vers le mode sombre'}
             aria-label={theme === 'dark' ? 'Activer le mode clair' : 'Activer le mode sombre'}
           >
@@ -289,15 +291,33 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, onNavigate }) => 
             )}
           </button>
 
-          {/* Moderator Dashboard trigger */}
+          {/* Moderator Dashboard trigger: ALWAYS VISIBLE ON MOBILE AND DESKTOP */}
           <button
             id="nav-moderator-button"
             onClick={() => setIsModeratorOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#E88CA6]/15 hover:bg-[#E88CA6]/25 text-[#B83E63] dark:text-[#F4A6BE] border border-[#E88CA6]/40 transition-all cursor-pointer shadow-[0_0_12px_rgba(232,140,166,0.15)] hover:scale-105"
-            title="Espace Modérateur (Ajouter, Modifier, Supprimer des produits)"
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              isModeratorAuthenticated
+                ? 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.2)] hover:scale-105'
+                : 'bg-[#E88CA6]/20 hover:bg-[#E88CA6]/30 text-[#B83E63] dark:text-[#F4A6BE] border border-[#E88CA6]/50 shadow-[0_0_12px_rgba(232,140,166,0.2)] hover:scale-105'
+            }`}
+            title={
+              isModeratorAuthenticated
+                ? `Espace Modérateur (Connecté : ${moderatorUser?.displayName || 'Admin'})`
+                : 'Connexion Espace Modérateur (Réservé aux modérateurs)'
+            }
           >
-            <Shield className="w-3.5 h-3.5 text-[#D46382] dark:text-[#E88CA6]" />
-            <span className="hidden sm:inline">Modérateur</span>
+            {isModeratorAuthenticated ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="inline font-bold">Modérateur</span>
+              </>
+            ) : (
+              <>
+                <Lock className="w-3.5 h-3.5 text-[#D46382] dark:text-[#E88CA6]" />
+                <span className="inline font-bold">Modérateur</span>
+              </>
+            )}
           </button>
 
           {/* Search trigger */}
@@ -360,25 +380,85 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, onNavigate }) => 
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white/95 dark:bg-[#0B0D12]/95 backdrop-blur-2xl border-b border-slate-200 dark:border-white/10 px-6 py-6 transition-all shadow-2xl max-h-[85vh] overflow-y-auto">
+        <div className="lg:hidden bg-white/95 dark:bg-[#0B0D12]/95 backdrop-blur-2xl border-b border-slate-200 dark:border-white/10 px-5 py-5 transition-all shadow-2xl max-h-[85vh] overflow-y-auto">
           <div className="flex flex-col gap-3">
-            {/* Mobile Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="flex items-center justify-between px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-amber-200 font-medium text-sm mb-2"
+            {/* PROMINENT TOP MODERATOR CARD ON MOBILE */}
+            <div
+              className={`p-3.5 rounded-2xl border transition-all ${
+                isModeratorAuthenticated
+                  ? 'bg-emerald-500/10 border-emerald-500/30'
+                  : 'bg-gradient-to-r from-[#E88CA6]/15 via-[#D46382]/10 to-purple-500/10 border-[#E88CA6]/30'
+              }`}
             >
-              <div className="flex items-center gap-2.5">
-                {theme === 'dark' ? (
-                  <Sun className="w-4 h-4 text-amber-300" />
-                ) : (
-                  <Moon className="w-4 h-4 text-indigo-600" />
-                )}
-                <span>Thème d'affichage</span>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-mono tracking-wider uppercase font-bold text-[#B83E63] dark:text-[#F4A6BE] flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-[#D46382] dark:text-[#E88CA6]" />
+                  <span>{isModeratorAuthenticated ? 'Session Modérateur Active' : 'Espace Modérateur Réservé'}</span>
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">管理者</span>
               </div>
-              <span className="text-xs px-2.5 py-1 rounded-md bg-white dark:bg-black/40 font-semibold shadow-xs">
-                {theme === 'dark' ? 'Sombre (Cliquer pour Clair)' : 'Clair (Cliquer pour Sombre)'}
-              </span>
-            </button>
+              <button
+                id="mobile-drawer-top-moderator-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setIsModeratorOpen(true);
+                }}
+                className={`w-full py-2.5 px-3.5 rounded-xl font-bold text-xs flex items-center justify-between shadow-xs transition-all cursor-pointer ${
+                  isModeratorAuthenticated
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'bg-gradient-to-r from-[#B83E63] to-[#D46382] text-white hover:opacity-95'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {isModeratorAuthenticated ? (
+                    <>
+                      <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Gérer les articles & stocks</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      <span>Connexion Modérateur (Accéder)</span>
+                    </>
+                  )}
+                </div>
+                <span className="text-[10px] font-mono opacity-90 underline">Ouvrir &rarr;</span>
+              </button>
+            </div>
+
+            {/* Mobile Currency & Theme Controls */}
+            <div className="grid grid-cols-2 gap-2 mb-1">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10">
+                <span className="text-xs text-slate-500 dark:text-[#9CA3AF] flex items-center gap-1 font-medium">
+                  <Globe className="w-3.5 h-3.5 text-[#D46382]" /> Devise
+                </span>
+                <select
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                  className="bg-transparent text-xs font-mono font-bold text-slate-800 dark:text-white focus:outline-none cursor-pointer"
+                >
+                  {(Object.keys(CURRENCIES) as CurrencyCode[]).map((c) => (
+                    <option key={c} value={c} className="bg-white dark:bg-[#12151E] text-slate-900 dark:text-white">
+                      {c} ({CURRENCIES[c].symbol})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                onClick={toggleTheme}
+                className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs text-slate-800 dark:text-white cursor-pointer"
+              >
+                <div className="flex items-center gap-1.5">
+                  {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-300" /> : <Moon className="w-3.5 h-3.5 text-slate-700" />}
+                  <span className="font-medium">Thème</span>
+                </div>
+                <span className="font-bold text-[11px] text-[#D46382] dark:text-[#E88CA6]">
+                  {theme === 'dark' ? 'Sombre' : 'Clair'}
+                </span>
+              </button>
+            </div>
 
             {/* Standard Nav items */}
             {navItems.map((item) => (
@@ -440,13 +520,29 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection, onNavigate }) => 
                 setMobileMenuOpen(false);
                 setIsModeratorOpen(true);
               }}
-              className="flex items-center justify-between text-left py-2.5 px-3 rounded-xl bg-[#E88CA6]/15 border border-[#E88CA6]/40 text-base font-semibold text-[#B83E63] dark:text-[#F4A6BE] hover:bg-[#E88CA6]/25 mt-2 cursor-pointer"
+              className={`flex items-center justify-between text-left py-2.5 px-3 rounded-xl border text-base font-semibold mt-2 cursor-pointer transition-colors ${
+                isModeratorAuthenticated
+                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-500/25'
+                  : 'bg-[#E88CA6]/15 border-[#E88CA6]/40 text-[#B83E63] dark:text-[#F4A6BE] hover:bg-[#E88CA6]/25'
+              }`}
             >
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-[#D46382] dark:text-[#E88CA6]" />
-                <span>Espace Modérateur (Gestion)</span>
+                {isModeratorAuthenticated ? (
+                  <>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <span>Espace Modérateur (Connecté)</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4 text-[#D46382] dark:text-[#E88CA6]" />
+                    <span>Connexion Modérateur</span>
+                  </>
+                )}
               </div>
-              <span className="text-xs font-mono text-[#D46382] dark:text-[#E88CA6]">管理者</span>
+              <span className="text-xs font-mono text-[#D46382] dark:text-[#E88CA6]">
+                {isModeratorAuthenticated ? '認証済' : '管理者'}
+              </span>
             </button>
           </div>
         </div>

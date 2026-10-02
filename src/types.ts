@@ -96,3 +96,12 @@ export interface Order {
   total: number;
   status: 'confirmed' | 'processing' | 'shipped';
 }
+
+export interface ModeratorUser {
+  id: string;
+  username: string;
+  email: string;
+  displayName: string;
+  role: 'moderator' | 'admin';
+  lastLogin: string;
+}

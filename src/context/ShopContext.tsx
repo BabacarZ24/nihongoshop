@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, CartItem, ProductCategory, CurrencyCode, CurrencyConfig, CheckoutForm, Order } from '../types';
+import { Product, CartItem, ProductCategory, CurrencyCode, CurrencyConfig, CheckoutForm, Order, ModeratorUser } from '../types';
 import { PRODUCTS } from '../data/products';
 
 export const CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
@@ -65,6 +65,13 @@ interface ShopContextType {
   setIsAboutOpen: (open: boolean) => void;
   isModeratorOpen: boolean;
   setIsModeratorOpen: (open: boolean) => void;
+
+  // Moderator Authentication & Access Control (Moderators ONLY, visitors don't need login)
+  isModeratorAuthenticated: boolean;
+  moderatorUser: ModeratorUser | null;
+  loginModerator: (identifier: string, password: string, rememberMe?: boolean) => { success: boolean; error?: string };
+  logoutModerator: () => void;
+  changeModeratorPassword: (oldPass: string, newPass: string) => { success: boolean; error?: string };
 
   // Search & Filtering
   selectedCategoryFilter: ProductCategory | 'all';
@@ -157,6 +164,158 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isModeratorOpen, setIsModeratorOpen] = useState(false);
+
+  // Moderator Authentication State (ONLY for moderators, visitors never need login)
+  const [isModeratorAuthenticated, setIsModeratorAuthenticated] = useState<boolean>(() => {
+    try {
+      const local = localStorage.getItem('nighongo_mod_session');
+      const session = sessionStorage.getItem('nighongo_mod_session');
+      const raw = local || session;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.authenticated) {
+          return true;
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return false;
+  });
+
+  const [moderatorUser, setModeratorUser] = useState<ModeratorUser | null>(() => {
+    try {
+      const local = localStorage.getItem('nighongo_mod_session');
+      const session = sessionStorage.getItem('nighongo_mod_session');
+      const raw = local || session;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.user) {
+          return parsed.user;
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
+
+  const loginModerator = (identifier: string, password: string, rememberMe: boolean = true) => {
+    const cleanId = identifier.trim().toLowerCase();
+
+    // Check custom password from localStorage if changed, else default 'Nighongo2026!'
+    let currentPassword = 'Nighongo2026!';
+    try {
+      const savedCreds = localStorage.getItem('nighongo_mod_creds');
+      if (savedCreds) {
+        const parsed = JSON.parse(savedCreds);
+        if (parsed.password) {
+          currentPassword = parsed.password;
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    const validAliases = [
+      'admin',
+      'moderateur',
+      'modérateur',
+      'moderateur@nighongoshop.com',
+      'admin@nighongo.sn',
+      'normandiagne13@gmail.com'
+    ];
+
+    const isIdentifierValid = validAliases.includes(cleanId) || cleanId === 'admin';
+    const isPasswordValid = password === currentPassword;
+
+    if (!isIdentifierValid || !isPasswordValid) {
+      return {
+        success: false,
+        error: 'Identifiant ou mot de passe modérateur incorrect. Veuillez vérifier vos accès.'
+      };
+    }
+
+    const user: ModeratorUser = {
+      id: 'mod-01',
+      username: cleanId.includes('@') ? cleanId.split('@')[0] : cleanId,
+      displayName: cleanId === 'admin' ? 'Modérateur Principal' : 'Équipe Modération',
+      email: cleanId.includes('@') ? cleanId : 'moderateur@nighongoshop.com',
+      role: 'admin',
+      lastLogin: new Date().toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    };
+
+    const sessionPayload = {
+      authenticated: true,
+      user,
+      token: `mod_tok_${Date.now()}`,
+      rememberMe
+    };
+
+    try {
+      if (rememberMe) {
+        localStorage.setItem('nighongo_mod_session', JSON.stringify(sessionPayload));
+        sessionStorage.removeItem('nighongo_mod_session');
+      } else {
+        sessionStorage.setItem('nighongo_mod_session', JSON.stringify(sessionPayload));
+        localStorage.removeItem('nighongo_mod_session');
+      }
+    } catch {
+      // ignore
+    }
+
+    setIsModeratorAuthenticated(true);
+    setModeratorUser(user);
+    return { success: true };
+  };
+
+  const logoutModerator = () => {
+    setIsModeratorAuthenticated(false);
+    setModeratorUser(null);
+    try {
+      localStorage.removeItem('nighongo_mod_session');
+      sessionStorage.removeItem('nighongo_mod_session');
+    } catch {
+      // ignore
+    }
+  };
+
+  const changeModeratorPassword = (oldPass: string, newPass: string) => {
+    let currentPassword = 'Nighongo2026!';
+    try {
+      const savedCreds = localStorage.getItem('nighongo_mod_creds');
+      if (savedCreds) {
+        const parsed = JSON.parse(savedCreds);
+        if (parsed.password) {
+          currentPassword = parsed.password;
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    if (oldPass !== currentPassword) {
+      return { success: false, error: 'L\'ancien mot de passe saisi est incorrect.' };
+    }
+
+    if (!newPass || newPass.length < 6) {
+      return { success: false, error: 'Le nouveau mot de passe doit comporter au moins 6 caractères.' };
+    }
+
+    try {
+      localStorage.setItem('nighongo_mod_creds', JSON.stringify({ password: newPass }));
+      return { success: true };
+    } catch {
+      return { success: false, error: 'Impossible d\'enregistrer le nouveau mot de passe.' };
+    }
+  };
+
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<ProductCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -325,6 +484,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addProduct = (newProd: Partial<Product>): Product => {
+    if (!isModeratorAuthenticated) {
+      console.warn('[Sécurité Nighongo] Action refusée : seuls les modérateurs authentifiés peuvent ajouter des articles.');
+      throw new Error('Action refusée : Seuls les modérateurs authentifiés peuvent ajouter des articles.');
+    }
+
     const id = newProd.id || `prod-${Date.now()}`;
     const slug = newProd.slug || (newProd.name ? newProd.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : `item-${Date.now()}`);
     const product: Product = {
@@ -362,6 +526,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateProduct = (id: string, updatedFields: Partial<Product>) => {
+    if (!isModeratorAuthenticated) {
+      console.warn('[Sécurité Nighongo] Action refusée : seuls les modérateurs authentifiés peuvent modifier des articles.');
+      return;
+    }
+
     setProducts((prev) =>
       prev.map((p) => {
         if (p.id === id) {
@@ -394,6 +563,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const deleteProduct = (id: string) => {
+    if (!isModeratorAuthenticated) {
+      console.warn('[Sécurité Nighongo] Action refusée : seuls les modérateurs authentifiés peuvent supprimer des articles.');
+      return;
+    }
+
     setProducts((prev) => prev.filter((p) => p.id !== id));
     // Clean from cart
     setCart((prev) => prev.filter((item) => item.product.id !== id));
@@ -404,6 +578,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resetProductsToDefault = () => {
+    if (!isModeratorAuthenticated) {
+      console.warn('[Sécurité Nighongo] Action refusée : seuls les modérateurs authentifiés peuvent réinitialiser le catalogue.');
+      return;
+    }
+
     setProducts(PRODUCTS);
     try {
       localStorage.removeItem('nighongo_products');
@@ -451,6 +630,11 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAboutOpen,
         isModeratorOpen,
         setIsModeratorOpen,
+        isModeratorAuthenticated,
+        moderatorUser,
+        loginModerator,
+        logoutModerator,
+        changeModeratorPassword,
         selectedCategoryFilter,
         setSelectedCategoryFilter,
         searchQuery,
@@ -472,6 +656,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </ShopContext.Provider>
   );
+
 };
 
 export const useShop = () => {
